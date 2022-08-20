@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
-import 'dart:html';
 
 import 'package:notes_app/constants/notes.constants.dart' show NotesConstants;
 import 'package:notes_app/constants/user.constants.dart' show UserConstants;
@@ -12,27 +10,30 @@ import 'package:notes_app/services/crud/crud.exceptions.dart';
 
 class NotesService {
   Database? _db;
-  Future<DatabaseNotes> createNote({required DatabaseUser owner}) async {
+  List<DatabaseNotes> _notes = [];
+
+  final _notesStreamController =
+      StreamController<List<DatabaseNotes>>.broadcast();
+  Stream<List<DatabaseNotes>> get allNotes => _notesStreamController.stream;
+  static final NotesService _shared = NotesService._sharedInstance();
+  NotesService._sharedInstance();
+  factory NotesService() => _shared;
+
+  Future<DatabaseNotes> createNote({required String text}) async {
     final db = _getDatabaseOrThrow();
-    final dbUser = await getUser(email: owner.email);
-    if (dbUser != owner) {
-      throw UserNotFindException();
+
+    final noteId = await db.insert(TablesConstants.noteTable, {
+      NotesConstants.textColumn: text,
+      NotesConstants.isSyncedWithCloudColumn: 1
+    });
+    if (noteId == 0) {
+      throw CouldNotCreateNoteException();
     } else {
-      const text = '';
-      final noteId = await db.insert(TablesConstants.noteTable, {
-        NotesConstants.userIdColumn: owner.id,
-        NotesConstants.textColumn: text,
-        NotesConstants.isSyncedWithCloudColumn: 1
-      });
-      if (noteId == 0) {
-        throw CouldNotCreateNoteException();
-      } else {
-        final note = DatabaseNotes(
-            id: noteId, text: text, userId: owner.id, isSyncedWithCloud: true);
-        _notes.add(note);
-        _notesStreamController.add(_notes);
-        return note;
-      }
+      final note =
+          DatabaseNotes(id: noteId, text: text, isSyncedWithCloud: true);
+      _notes.add(note);
+      _notesStreamController.add(_notes);
+      return note;
     }
   }
 
@@ -45,12 +46,8 @@ class NotesService {
     }
   }
 
-  List<DatabaseNotes> _notes = [];
-
-  final _notesStreamController =
-      StreamController<List<DatabaseNotes>>.broadcast();
   Future<void> _cacheNotes() async {
-    final allNotes = await getAllNodes();
+    final allNotes = await getAllNotes();
     _notes = allNotes.toList();
     _notesStreamController.add(_notes);
   }
@@ -77,7 +74,7 @@ class NotesService {
     }
   }
 
-  Future<Iterable<DatabaseNotes>> getAllNodes() async {
+  Future<Iterable<DatabaseNotes>> getAllNotes() async {
     final db = _getDatabaseOrThrow();
     final allNotes = await db.query(TablesConstants.noteTable);
     return allNotes.map((note) => DatabaseNotes.fromRow(note));
@@ -153,20 +150,12 @@ class NotesService {
   }
 
   Future<void> open() async {
-    if (_db == null) {
-      throw DatabaseAlreadyOpenException();
-    }
-    try {
-      final docsPath = await getApplicationDocumentsDirectory();
-      final dbPath = join(docsPath.path, TablesConstants.dbName);
-      final db = await openDatabase(dbPath);
-      _db = db;
-      await db.execute(UserConstants.createUserTable);
-      await db.execute(NotesConstants.createNotesTable);
-      await _cacheNotes();
-    } on MissingPlatformDirectoryException {
-      throw UnableToGetPlatformDirectoryException();
-    }
+    final docsPath = await getApplicationDocumentsDirectory();
+    final dbPath = join(docsPath.path, TablesConstants.dbName);
+    final db = await openDatabase(dbPath);
+    _db = db;
+    await db.execute(NotesConstants.createNotesTable);
+    await _cacheNotes();
   }
 
   Future<void> close() async {
@@ -201,20 +190,17 @@ class DatabaseUser {
 class DatabaseNotes {
   final int id;
   final String text;
-  final int userId;
   final bool isSyncedWithCloud;
 
   const DatabaseNotes({
     required this.id,
     required this.text,
-    required this.userId,
     required this.isSyncedWithCloud,
   });
 
   DatabaseNotes.fromRow(Map<String, Object?> map)
       : id = map[NotesConstants.idColumn] as int,
         text = map[NotesConstants.textColumn] as String,
-        userId = map[NotesConstants.textColumn] as int,
         isSyncedWithCloud =
             (map[NotesConstants.isSyncedWithCloudColumn] as int) == 1
                 ? true
@@ -222,7 +208,7 @@ class DatabaseNotes {
 
   @override
   String toString() =>
-      'Note, Id: $id, Text: $text, userId: $userId, isSincedWithCloud: $isSyncedWithCloud';
+      'Note, Id: $id, Text: $text, isSincedWithCloud: $isSyncedWithCloud';
   @override
   bool operator ==(covariant DatabaseNotes other);
 

@@ -6,10 +6,8 @@ class NotesConstants {
   static String createNotesTable = '''
       CREATE TABLE IF NOT EXISTS "notes" (
         "id"	INTEGER NOT NULL,
-        "user_id"	INTEGER,
         "text"	TEXT,
         "is_synced_with_cloud"	INTEGER DEFAULT 0,
-        PRIMARY KEY("id" AUTOINCREMENT),
-        FOREIGN KEY("user_id") REFERENCES "user"("id")
+        PRIMARY KEY("id" AUTOINCREMENT)
       );''';
 }
