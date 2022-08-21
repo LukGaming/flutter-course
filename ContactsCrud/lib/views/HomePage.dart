@@ -41,53 +41,76 @@ class _HomePageState extends State<HomePage> {
       _nameEditingController.text = existingContact['name'];
       _mobileEditingController.text = existingContact['mobile'];
     }
+    final _formKey = GlobalKey<FormState>();
     showModalBottomSheet(
         context: context,
         elevation: 5,
         isScrollControlled: true,
-        builder: (_) => Container(
-              padding: EdgeInsets.only(
-                top: 15,
-                left: 15,
-                right: 15,
-                // this will prevent the soft keyboard from covering the text fields
-                bottom: MediaQuery.of(context).viewInsets.bottom + 120,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  TextField(
-                    controller: _nameEditingController,
-                    decoration: const InputDecoration(hintText: "Name"),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    controller: _mobileEditingController,
-                    decoration: const InputDecoration(hintText: "Mobile"),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  ElevatedButton(
-                      onPressed: () async {
-                        if (id == null) {
-                          await _createContact();
-                        } else {
-                          if (id != null) {
-                            await _updateContact(id);
-                          }
+        builder: (_) => Form(
+              key: _formKey,
+              child: Container(
+                padding: EdgeInsets.only(
+                  top: 15,
+                  left: 15,
+                  right: 15,
+                  // this will prevent the soft keyboard from covering the text fields
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 120,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    TextFormField(
+                      controller: _nameEditingController,
+                      decoration: const InputDecoration(hintText: "Name"),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter a name";
                         }
-                        _mobileEditingController.text = '';
-                        _nameEditingController.text = '';
-                        Navigator.of(context).pop();
+                        return null;
                       },
-                      child: Text(id == null
-                          ? "Create a new Contact"
-                          : "Updating a Contact"))
-                ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      controller: _mobileEditingController,
+                      decoration: const InputDecoration(hintText: "Mobile"),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter a mobile";
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            if (id == null) {
+                              await _createContact();
+                              _handleSnackBar(
+                                  "Contact Created Successfuly", "success");
+                            } else {
+                              if (id != null) {
+                                await _updateContact(id);
+                                _handleSnackBar(
+                                    "Contact Updated Successfuly", "success");
+                              }
+                            }
+
+                            _mobileEditingController.text = '';
+                            _nameEditingController.text = '';
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        child: Text(id == null
+                            ? "Create a new Contact"
+                            : "Updating a Contact"))
+                  ],
+                ),
               ),
             ));
   }
@@ -145,8 +168,11 @@ class _HomePageState extends State<HomePage> {
                                   color: Colors.purple,
                                 )),
                             IconButton(
-                                onPressed: () =>
-                                    _deleteContact(_contacts[index]['id']),
+                                onPressed: () {
+                                  _deleteContact(_contacts[index]['id']);
+                                  _handleSnackBar(
+                                      "Contact deleted Successfuly", "success");
+                                },
                                 icon: const Icon(
                                   Icons.delete,
                                   color: Colors.deepOrange,
@@ -180,5 +206,13 @@ class _HomePageState extends State<HomePage> {
   Future<void> _deleteContact(int id) async {
     await SqlHelper.deleteContact(id);
     _getContacts();
+  }
+
+  _handleSnackBar(String message, String? type) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          backgroundColor: type == "success" ? Colors.green : Colors.red,
+          content: Text(message)),
+    );
   }
 }
