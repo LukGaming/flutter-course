@@ -1,7 +1,7 @@
 import 'package:contacts_crud/models/contact.dart';
 import 'package:contacts_crud/views/contact_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../utils/SqlHelper.dart';
 
@@ -15,6 +15,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> _contacts = [];
   bool _isLoading = true;
+  final maskFormatter = MaskTextInputFormatter(
+      mask: ' (##) #####-####',
+      filter: {"#": RegExp(r'[0-9]')},
+      type: MaskAutoCompletionType.lazy);
 
   void _getContacts() async {
     final data = await SqlHelper.getContacts();
@@ -74,6 +78,8 @@ class _HomePageState extends State<HomePage> {
                       height: 10,
                     ),
                     TextFormField(
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [maskFormatter],
                       controller: _mobileEditingController,
                       decoration: const InputDecoration(hintText: "Mobile"),
                       validator: (value) {
