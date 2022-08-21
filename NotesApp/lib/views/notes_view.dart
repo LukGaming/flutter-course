@@ -1,6 +1,3 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/services/crud/notes.services.dart';
 
@@ -18,12 +15,15 @@ class _NotesViewState extends State<NotesView> {
   void initState() {
     _notesService = NotesService();
     _notesService.open();
+    _notesService.createNote(text: "Teste");
+    final notes = _notesService.getAllNotes();
+    print(notes);
     super.initState();
   }
 
   @override
   void dispose() {
-    // _notesService.close();
+    _notesService.close();
     super.dispose();
   }
 
@@ -43,13 +43,15 @@ class _NotesViewState extends State<NotesView> {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                       return const Text("Waiting for all notes...");
+                    case ConnectionState.done:
+                      return const Text("Already found the notes");
                     default:
-                      return const CircularProgressIndicator();
+                      return const Center(child: CircularProgressIndicator());
                   }
                 },
               );
             default:
-              return const CircularProgressIndicator();
+              return const Center(child: CircularProgressIndicator());
           }
         },
       ),
