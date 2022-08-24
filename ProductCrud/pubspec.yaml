@@ -1,4 +1,4 @@
-name: contacts_crud
+name: product_crud
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -34,8 +34,6 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  sqflite: ^2.0.3+1
-  mask_text_input_formatter: ^2.4.0
   http: ^0.13.5
 
 dev_dependencies:
