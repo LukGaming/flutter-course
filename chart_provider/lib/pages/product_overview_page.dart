@@ -1,3 +1,4 @@
+import 'package:chart_provider/components/app_drawer.dart';
 import 'package:chart_provider/components/badge.dart';
 import 'package:chart_provider/components/product_grid.dart';
 import 'package:chart_provider/providers/cart.dart';
@@ -60,6 +61,7 @@ class ProductsOverViewPage extends StatelessWidget {
         padding: EdgeInsets.all(20.0),
         child: ProductGrid(),
       ),
+      drawer: const AppDrawer(),
     );
   }
 }
