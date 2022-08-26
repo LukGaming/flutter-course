@@ -1,7 +1,6 @@
 import 'package:chart_provider/components/app_drawer.dart';
 import 'package:chart_provider/components/order_widget.dart';
 import 'package:chart_provider/providers/order.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

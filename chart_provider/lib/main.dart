@@ -1,6 +1,7 @@
 import 'package:chart_provider/pages/cart.dart';
 import 'package:chart_provider/pages/orders.dart';
 import 'package:chart_provider/pages/product_detail_page.dart';
+import 'package:chart_provider/pages/product_managment.dart';
 import 'package:chart_provider/pages/product_overview_page.dart';
 import 'package:chart_provider/providers/cart.dart';
 import 'package:chart_provider/providers/order.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
           AppRoutes.PRODUCT_DETAIL: (context) => ProductDetailPage(),
           AppRoutes.CART: (context) => CartPage(),
           AppRoutes.ORDERS: (context) => OrdersPage(),
+          AppRoutes.PRODUCT_MANAGMENT: (context) => ProductManagmentPage(),
         },
         debugShowCheckedModeBanner: false,
       ),

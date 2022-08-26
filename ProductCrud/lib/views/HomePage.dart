@@ -10,21 +10,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Map<String, dynamic>> _products = [];
-  Future<void> _getProducts() async {
-    var products = await ProductService.getProducts();
-    setState(() {
-      _products = products;
-    });
-  }
-
+  final List<Product> _products = [
+    Product(
+        id: 0,
+        name: "teste",
+        description: "teste",
+        price: "200",
+        categoryId: 0),
+  ];
   @override
   void initState() {
-    setState(() {
-      _getProducts();
-    });
-
     super.initState();
+    ProductService.getProducts().then((value) {
+      print(value.toList().length);
+    });
   }
 
   Widget build(BuildContext context) {
@@ -35,9 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView.builder(
         itemCount: _products.length,
         itemBuilder: (context, index) {
-          return Row(
-            children: [const Text("teste")],
-          );
+          return const Text("Teste");
         },
       ),
       floatingActionButton: FloatingActionButton(
