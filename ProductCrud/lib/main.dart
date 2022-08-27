@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:product_crud/views/HomePage.dart';
+import 'package:product_crud/views/product_list.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: ProductList(),
     );
   }
 }

@@ -1,22 +1,20 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:product_crud/components/product_list_item.dart';
 import 'package:product_crud/models/product.dart';
 import 'package:product_crud/services/product_service.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class ProductList extends StatefulWidget {
+  const ProductList({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ProductList> createState() => _ProductList();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ProductList extends State<ProductList> {
   List<Product> _products = [];
   @override
   void initState() {
     ProductService.getProducts().then((value) {
-      print('Value: ${value}');
       setState(() {
         _products = value;
       });
@@ -24,6 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -31,15 +30,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView.builder(
         itemCount: _products.length,
-        itemBuilder: (context, index) => Row(
-          children: [
-            Row(
-              children: [
-                Text(_products[index].name),
-              ],
-            )
-          ],
-        ),
+        itemBuilder: (context, index) => SingleChildScrollView(
+            child: ProductlistItem(product: _products[index])),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
