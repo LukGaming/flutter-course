@@ -20,4 +20,8 @@ class ProductService {
       throw Exception('failed to get Products');
     }
   }
+
+  static Future removeProduct(Product product) async {
+    return await http.delete(Uri.parse('${apiUrl}/${product.id}'));
+  }
 }

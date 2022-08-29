@@ -22,6 +22,12 @@ class _ProductList extends State<ProductList> {
     super.initState();
   }
 
+  removeProduct(Product product) {
+    setState(() {
+      _products.removeWhere((element) => element.id == product.id);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +37,9 @@ class _ProductList extends State<ProductList> {
       body: ListView.builder(
         itemCount: _products.length,
         itemBuilder: (context, index) => SingleChildScrollView(
-            child: ProductlistItem(product: _products[index])),
+          child: ProductlistItem(
+              product: _products[index], removeProduct: removeProduct),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:product_crud/services/product_service.dart';
+import 'package:product_crud/views/product_crud.dart';
 import 'package:product_crud/views/product_detail.dart';
 
 import '../models/product.dart';
 
 class ProductlistItem extends StatelessWidget {
   final Product product;
-  const ProductlistItem({Key? key, required this.product}) : super(key: key);
-
+  Function removeProduct;
+  ProductlistItem(
+      {Key? key, required this.product, required this.removeProduct})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -27,7 +31,7 @@ class ProductlistItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CircleAvatar(
-                backgroundColor: Colors.purple,
+                backgroundColor: Colors.blue,
                 child: Text(
                   product.price,
                 ),
@@ -45,7 +49,17 @@ class ProductlistItem extends StatelessWidget {
               Container(
                   margin: const EdgeInsets.only(right: 20),
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductCrud(
+                            isEditing: true,
+                            product: product,
+                          ),
+                        ),
+                      );
+                    },
                     icon: const Icon(
                       Icons.edit,
                       color: Colors.purple,
@@ -55,7 +69,39 @@ class ProductlistItem extends StatelessWidget {
               Container(
                   margin: const EdgeInsets.only(right: 20),
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog<bool>(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text("Removing a Product"),
+                              content: const Text(
+                                  "Are you sure you want to remove this product?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
+                                  child: const Text("Cancel"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context, true);
+                                    removeProduct(product);
+                                  },
+                                  child: const Text("Yes"),
+                                ),
+                              ],
+                            );
+                          }).then(
+                        (value) => {
+                          if (value == true)
+                            {
+                              ProductService.removeProduct(product)
+                                  .then((value) => {print(value)})
+                            }
+                        },
+                      );
+                    },
                     icon: const Icon(
                       Icons.delete,
                       color: Colors.red,
