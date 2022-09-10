@@ -1,16 +1,10 @@
 {
   "products": [
     {
-      "id": 1,
-      "name": "produto 0",
-      "description": "produto teste",
-      "price": "999"
-    },
-    {
-      "id": 2,
-      "name": "produto 998",
-      "description": "descricao do produto 4443",
-      "price": "19222"
+      "name": "teste 123",
+      "description": "teste 23",
+      "price": "123123123",
+      "id": 1
     }
   ]
 }

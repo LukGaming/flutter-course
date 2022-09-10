@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ProductList(),
+      home: const ProductList(),
     );
   }
 }

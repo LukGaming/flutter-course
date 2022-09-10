@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:product_crud_with_cubit/cubit/Auth/auth_cubit.dart';
+import 'package:product_crud_with_cubit/cubit/Utils/utils_cubit.dart';
 import 'package:product_crud_with_cubit/data/models/product.dart';
 import 'package:product_crud_with_cubit/data/models/product_request.dart';
 import 'package:product_crud_with_cubit/data/repository/base_repository.dart';
@@ -10,8 +12,14 @@ import 'package:product_crud_with_cubit/data/repository/base_repository.dart';
 part 'product_state.dart';
 
 class ProductCubit extends Cubit<ProductState> {
-  ProductCubit() : super(LoadingProducts());
+  final AuthCubit authCubit;
+  final UtilsCubit utilsCubit;
+  ProductCubit({
+    required this.authCubit,
+    required this.utilsCubit,
+  }) : super(LoadingProducts());
   void getProducts() async {
+    authCubit.logUser();
     var baseRepository = BaseRepository();
     List response = await baseRepository.getRequest("products");
     List<Product> productList =
@@ -51,6 +59,7 @@ class ProductCubit extends Cubit<ProductState> {
       emit(ProductMessages("Produto deletado com sucesso!"));
       emit(ProductList(productList));
     }
+    utilsCubit.showDialog("teste");
   }
 
   Future<void> editProduct({
@@ -59,6 +68,12 @@ class ProductCubit extends Cubit<ProductState> {
     required String description,
     required String price,
   }) async {
+    final currentAuthState = authCubit.state;
+    if (currentAuthState is UserAccess) {
+      authCubit.logUser();
+      print(currentAuthState.isLogged);
+    }
+
     Product product = Product(
       id: id,
       name: name,

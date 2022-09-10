@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:product_crud_with_cubit/cubit/Auth/auth_cubit.dart';
 
 import 'package:product_crud_with_cubit/cubit/product/product_cubit.dart';
 import 'package:product_crud_with_cubit/presentation/components/product_list_tile.dart';
@@ -10,6 +11,7 @@ class ProductListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productCubit = BlocProvider.of<ProductCubit>(context);
+    final authCubit = BlocProvider.of<AuthCubit>(context);
     productCubit.getProducts();
     return Scaffold(
       appBar: AppBar(
@@ -39,34 +41,21 @@ class BlocConsumerMessages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productCubit = BlocProvider.of<ProductCubit>(context);
-    return BlocConsumer<ProductCubit, ProductState>(
-      listener: (context, state) {
-        if (state is ProductMessages) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-            ),
+    return BlocBuilder<ProductCubit, ProductState>(
+      bloc: productCubit,
+      builder: (context, state) {
+        if (state is LoadingProducts) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state is ProductList) {
+          return ListView.builder(
+            itemCount: state.productList.length,
+            itemBuilder: (context, index) =>
+                ProductListTile(product: state.productList[index]),
           );
         }
-      },
-      builder: (context, state) {
-        return BlocBuilder<ProductCubit, ProductState>(
-          bloc: productCubit,
-          builder: (context, state) {
-            if (state is LoadingProducts) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (state is ProductList) {
-              return ListView.builder(
-                itemCount: state.productList.length,
-                itemBuilder: (context, index) =>
-                    ProductListTile(product: state.productList[index]),
-              );
-            }
-            return Container();
-          },
-        );
+        return Container();
       },
     );
   }
