@@ -19,10 +19,12 @@ class MyHomePage2 extends StatelessWidget {
       body: BlocListener<CounterCubit, CounterState>(
         listener: (context, state) {
           if (state.wasIncremented == true) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("incrementing"),
-              duration: Duration(microseconds: 300),
-            ));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("incrementing"),
+                duration: Duration(microseconds: 300),
+              ),
+            );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("decrementing"),

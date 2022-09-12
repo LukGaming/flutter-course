@@ -28,16 +28,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: BlocConsumer<UtilsCubit, UtilsState>(
-          listener: (context, state) {
-            if (state is ShowDialog) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                ),
-              );
-            }
-          },
+        home: BlocBuilder<UtilsCubit, UtilsState>(
           builder: (context, state) {
             return const ProductListView();
           },
