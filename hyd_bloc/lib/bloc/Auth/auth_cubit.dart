@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:hyd_bloc/bloc/Utils/utils_cubit.dart';
 import 'package:hyd_bloc/data/repositories/base_repository.dart';
 import 'package:hyd_bloc/models/logged_user.dart';
 import 'package:hyd_bloc/models/login_request.dart';
@@ -8,7 +9,8 @@ import 'package:meta/meta.dart';
 part 'auth_state.dart';
 
 class AuthCubit extends HydratedCubit<AuthState> {
-  AuthCubit() : super(AuthInitial());
+  final UtilsCubit utilsCubit;
+  AuthCubit({required this.utilsCubit}) : super(AuthInitial());
   Future<void> logUser(String email, String password) async {
     LoginRequest loginRequest =
         LoginRequest(emailDoUsuario: email, senhaDoUsuario: password);
@@ -17,13 +19,21 @@ class AuthCubit extends HydratedCubit<AuthState> {
       "autenticacao/autenticar",
       loginRequest.toJson(),
     );
-    LoggedUser loggedUser =
-        LoggedUser.fromJson(response["dados"]["usuarioLogado"]);
-    emit(LoggedUserState(loggedUser: loggedUser));
+    if (response["sucesso"] == false) {
+      utilsCubit.showPopUp(
+        "Falha ao logar",
+        "Email ou senhas incorretos!",
+      );
+    } else {
+      LoggedUser loggedUser =
+          LoggedUser.fromJson(response["dados"]["usuarioLogado"]);
+      emit(LoggedUserState(loggedUser: loggedUser));
+    }
   }
 
   void logout() {
     HydratedBloc.storage.clear();
+    utilsCubit.showSnackBar("Deslogado com sucesso!");
     emit(AuthInitial());
   }
 
