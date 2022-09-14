@@ -10,13 +10,17 @@ part 'auth_state.dart';
 
 class AuthCubit extends HydratedBloc<AuthCubit, AuthState> {
   final UtilsCubit utilsCubit;
-  AuthCubit({required this.utilsCubit}) : super(AuthInitial());
+  final BaseRespository baseRespository;
+  AuthCubit({
+    required this.utilsCubit,
+    required this.baseRespository,
+  }) : super(AuthInitial());
 
   Future<void> login(String email, String password) async {
-    var baseRepository = BaseRespository();
+    // var baseRepository = BaseRespository();
     LoginRequest loginRequest =
         LoginRequest(emailDoUsuario: email, senhaDoUsuario: password);
-    var response = await baseRepository.postRequest(
+    var response = await baseRespository.postRequest(
         "autenticacao/autenticar", loginRequest);
     if (response["sucesso"] == true) {
       emit(
@@ -31,7 +35,7 @@ class AuthCubit extends HydratedBloc<AuthCubit, AuthState> {
   void showUserId() {
     var currentState = state;
     if (currentState is UserLoggedState) {
-      print(currentState.loggedUser.idDoUsuario);
+      print(currentState.loggedUser.token);
     }
   }
 

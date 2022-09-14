@@ -1,5 +1,6 @@
 import 'package:auth_cubit/Cubit/Auth/auth_cubit.dart';
 import 'package:auth_cubit/Cubit/Utils/utils_cubit.dart';
+import 'package:auth_cubit/data/repositories/base_repository.dart';
 import 'package:auth_cubit/presentation/screens/home_page_screen.dart';
 import 'package:auth_cubit/presentation/screens/login_screen.dart';
 import 'package:flutter/foundation.dart';
@@ -22,14 +23,17 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    BaseRespository baseRespository = BaseRespository();
     return MultiBlocProvider(
       providers: [
         BlocProvider<UtilsCubit>(
           create: (context) => UtilsCubit(),
         ),
         BlocProvider<AuthCubit>(
-          create: (context) =>
-              AuthCubit(utilsCubit: context.read<UtilsCubit>()),
+          create: (context) => AuthCubit(
+            utilsCubit: context.read<UtilsCubit>(),
+            baseRespository: baseRespository,
+          ),
         ),
       ],
       child: MaterialApp(
