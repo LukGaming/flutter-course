@@ -5,6 +5,12 @@
       "description": "teste 23",
       "price": "123123123",
       "id": 1
+    },
+    {
+      "name": "produto 33",
+      "description": "descricao 33",
+      "price": "333",
+      "id": 2
     }
   ]
 }

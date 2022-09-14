@@ -1,4 +1,5 @@
 import 'package:auth_cubit/Cubit/Auth/auth_cubit.dart';
+import 'package:auth_cubit/validators/login_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,9 +10,10 @@ class FormPage extends StatelessWidget {
   Widget build(BuildContext context) {
     TextEditingController emailEditingController = TextEditingController();
     TextEditingController passwordEditingController = TextEditingController();
-    GlobalKey formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     Widget sizedBox = const SizedBox(height: 10);
     void submit() {
+      if (formKey.currentState!.validate()) {}
       BlocProvider.of<AuthCubit>(context)
           .login(emailEditingController.text, passwordEditingController.text);
     }
@@ -32,6 +34,7 @@ class FormPage extends StatelessWidget {
                         border: OutlineInputBorder(),
                         labelText: "email",
                       ),
+                      validator: emailValidator,
                       controller: emailEditingController,
                       keyboardType: TextInputType.emailAddress,
                     ),
@@ -43,6 +46,7 @@ class FormPage extends StatelessWidget {
                         labelText: "senha",
                       ),
                       obscureText: true,
+                      validator: passwordValidator,
                     ),
                     sizedBox,
                     TextButton(

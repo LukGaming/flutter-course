@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:product_crud_with_cubit/cubit/Auth/auth_cubit.dart';
 import 'package:product_crud_with_cubit/cubit/Utils/utils_cubit.dart';
@@ -11,7 +12,7 @@ import 'package:product_crud_with_cubit/data/repository/base_repository.dart';
 
 part 'product_state.dart';
 
-class ProductCubit extends Cubit<ProductState> {
+class ProductCubit extends HydratedBloc<ProductCubit, ProductState> {
   final AuthCubit authCubit;
   final UtilsCubit utilsCubit;
   ProductCubit({
@@ -71,7 +72,6 @@ class ProductCubit extends Cubit<ProductState> {
     final currentAuthState = authCubit.state;
     if (currentAuthState is UserAccess) {
       authCubit.logUser();
-      print(currentAuthState.isLogged);
     }
 
     Product product = Product(
@@ -95,6 +95,32 @@ class ProductCubit extends Cubit<ProductState> {
       productList[productIndex] = editedProduct;
       emit(ProductMessages("Produto editado com sucesso!"));
       emit(ProductList(productList));
+    }
+  }
+
+  @override
+  ProductState? fromJson(Map<String, dynamic> json) {
+    List<Product> productList = [];
+    (json["productList"] as List).forEach((element) {
+      productList.add(
+        Product.fromJson(element),
+      );
+    });
+    return ProductList(productList);
+    // if (state is ProductList) {
+    //
+    //   json.map((key, value) {
+    //     print(key);
+    //     return value;
+    //   });
+    //   // return ProductList();
+    // }
+  }
+
+  @override
+  Map<String, dynamic>? toJson(ProductState state) {
+    if (state is ProductList) {
+      return {'productList': state.productList};
     }
   }
 }
