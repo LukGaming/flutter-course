@@ -15,3 +15,9 @@ class ShowAlertPopUp extends UtilsState {
   final String message;
   ShowAlertPopUp({required this.title, required this.message});
 }
+
+class ClosePopUp extends UtilsState {}
+
+class UtilsLoadingState extends UtilsState {}
+
+class UtilsCloseLoadingState extends UtilsState {}

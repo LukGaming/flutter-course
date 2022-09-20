@@ -64,6 +64,12 @@ class FormPage extends StatelessWidget {
               ),
             ),
           ),
+          TextButton(
+            onPressed: () {
+              context.read<AuthCubit>().goToRegisterView();
+            },
+            child: const Text("Não tem uma conta?"),
+          )
         ],
       ),
     );

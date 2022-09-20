@@ -9,3 +9,5 @@ class UserLoggedState extends AuthState {
   final LoggedUser loggedUser;
   UserLoggedState({required this.loggedUser});
 }
+
+class UserRegister extends AuthState {}

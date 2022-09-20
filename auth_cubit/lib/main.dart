@@ -3,6 +3,7 @@ import 'package:auth_cubit/Cubit/Utils/utils_cubit.dart';
 import 'package:auth_cubit/data/repositories/base_repository.dart';
 import 'package:auth_cubit/presentation/screens/home_page_screen.dart';
 import 'package:auth_cubit/presentation/screens/login_screen.dart';
+import 'package:auth_cubit/presentation/screens/user_register_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,6 +42,19 @@ class MyApp extends StatelessWidget {
         ),
         home: BlocConsumer<UtilsCubit, UtilsState>(
           listener: (context, state) {
+            if (state is UtilsLoadingState) {
+              showDialog(
+                context: context,
+                builder: (context) => const AlertDialog(
+                  content: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              );
+            }
+            if (state is UtilsCloseLoadingState) {
+              Navigator.pop(context);
+            }
             if (state is ShowSnackBar) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -58,16 +72,21 @@ class MyApp extends StatelessWidget {
                   actions: [
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(context, "Ok");
+                        context.read<AuthCubit>().closePopup("ok");
                       },
                       child: const Text("Ok"),
                     ),
                   ],
                 ),
-              ).then((value) {
-                //TODO: handle the value
-                print(value);
-              });
+              );
+            }
+            if (state is ClosePopUp) {
+              final state = context.read<AuthCubit>();
+              final currentState = state;
+              if (currentState is UserRegister) {
+                currentState.goToLoginView();
+              }
+              Navigator.pop(context);
             }
           },
           builder: (context, state) {
@@ -91,6 +110,8 @@ class AuthCubitView extends StatelessWidget {
             return const FormPage();
           } else if (state is UserLoggedState) {
             return const HomePage();
+          } else if (state is UserRegister) {
+            return const UserRegisterView();
           }
           return Container();
         },

@@ -2,6 +2,7 @@ import 'package:auth_cubit/Cubit/Utils/utils_cubit.dart';
 import 'package:auth_cubit/constants/pop_up_messages.dart';
 import 'package:auth_cubit/data/models/logged_user.dart';
 import 'package:auth_cubit/data/models/login_request.dart';
+import 'package:auth_cubit/data/models/register_user_request.dart';
 import 'package:auth_cubit/data/repositories/base_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -15,10 +16,57 @@ class AuthCubit extends HydratedBloc<AuthCubit, AuthState> {
     required this.utilsCubit,
   }) : super(AuthInitial());
 
-  Future<void> login(String email, String password) async {
+  void registerUser({
+    required String name,
+    required String phone,
+    required String email,
+    required String password,
+  }) async {
+    UserRegisterRequest userRegisterRequest = UserRegisterRequest(
+      nomeDoUsuario: name,
+      emailDoUsuario: email,
+      telefoneDoUsuario: phone,
+      senhaDoUsuario: password,
+      responseServer: "",
+      telefoneDoUsuarioEWhatsapp: true,
+      ddiTelefoneDoUsuario: "64",
+      paisDDIDoTelefoneDoUsuario: "+55",
+    );
+    utilsCubit.startLoading();
     var baseRepository = BaseRespository();
+    var response =
+        await baseRepository.postRequest("usuario", userRegisterRequest);
+    utilsCubit.stopLoading();
+    if (response["sucesso"] == true) {
+      utilsCubit.showAlertPopUp(
+        "Sucesso!",
+        user_created_successifuly,
+      );
+    } else {
+      utilsCubit.showAlertPopUp(
+        email_or_password_wrong,
+        response["mensagem"],
+      );
+    }
+  }
+
+  void closePopup(value) {
+    utilsCubit.closePopUp();
+    // if (state is UserRegister) goToLoginView();
+  }
+
+  void goToRegisterView() {
+    emit(UserRegister());
+  }
+
+  void goToLoginView() {
+    emit(AuthInitial());
+  }
+
+  Future<void> login(String email, String password) async {
     LoginRequest loginRequest =
         LoginRequest(emailDoUsuario: email, senhaDoUsuario: password);
+    var baseRepository = BaseRespository();
     var response = await baseRepository.postRequest(
         "autenticacao/autenticar", loginRequest);
     if (response["sucesso"] == true) {
@@ -30,7 +78,6 @@ class AuthCubit extends HydratedBloc<AuthCubit, AuthState> {
       utilsCubit.showSnackBar("Logado com sucesso!");
     } else {
       utilsCubit.showAlertPopUp(email_or_password_wrong, response["mensagem"]);
-      print(response);
     }
   }
 

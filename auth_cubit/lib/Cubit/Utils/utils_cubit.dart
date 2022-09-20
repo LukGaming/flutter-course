@@ -5,6 +5,13 @@ part 'utils_state.dart';
 
 class UtilsCubit extends Cubit<UtilsState> {
   UtilsCubit() : super(UtilsInitial());
+  void startLoading() {
+    emit(UtilsLoadingState());
+  }
+
+  void stopLoading() {
+    emit(UtilsCloseLoadingState());
+  }
 
   void showSnackBar(String message) {
     emit(
@@ -19,5 +26,9 @@ class UtilsCubit extends Cubit<UtilsState> {
         message: message,
       ),
     );
+  }
+
+  void closePopUp() {
+    emit(ClosePopUp());
   }
 }
