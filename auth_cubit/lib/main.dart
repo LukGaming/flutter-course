@@ -81,11 +81,6 @@ class MyApp extends StatelessWidget {
               );
             }
             if (state is ClosePopUp) {
-              final state = context.read<AuthCubit>();
-              final currentState = state;
-              if (currentState is UserRegister) {
-                currentState.goToLoginView();
-              }
               Navigator.pop(context);
             }
           },

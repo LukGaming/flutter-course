@@ -37,6 +37,7 @@ class AuthCubit extends HydratedBloc<AuthCubit, AuthState> {
     var response =
         await baseRepository.postRequest("usuario", userRegisterRequest);
     utilsCubit.stopLoading();
+    goToLoginView();
     if (response["sucesso"] == true) {
       utilsCubit.showAlertPopUp(
         "Sucesso!",
