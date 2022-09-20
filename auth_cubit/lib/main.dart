@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    BaseRespository baseRespository = BaseRespository();
     return MultiBlocProvider(
       providers: [
         BlocProvider<UtilsCubit>(
@@ -32,7 +31,6 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(
             utilsCubit: context.read<UtilsCubit>(),
-            baseRespository: baseRespository,
           ),
         ),
       ],
@@ -46,9 +44,30 @@ class MyApp extends StatelessWidget {
             if (state is ShowSnackBar) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
+                  duration: const Duration(seconds: 1),
                   content: Text(state.message),
                 ),
               );
+            }
+            if (state is ShowAlertPopUp) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text(state.title),
+                  content: Text(state.message),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context, "Ok");
+                      },
+                      child: const Text("Ok"),
+                    ),
+                  ],
+                ),
+              ).then((value) {
+                //TODO: handle the value
+                print(value);
+              });
             }
           },
           builder: (context, state) {

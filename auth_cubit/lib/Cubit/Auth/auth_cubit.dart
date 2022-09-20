@@ -1,4 +1,5 @@
 import 'package:auth_cubit/Cubit/Utils/utils_cubit.dart';
+import 'package:auth_cubit/constants/pop_up_messages.dart';
 import 'package:auth_cubit/data/models/logged_user.dart';
 import 'package:auth_cubit/data/models/login_request.dart';
 import 'package:auth_cubit/data/repositories/base_repository.dart';
@@ -10,17 +11,15 @@ part 'auth_state.dart';
 
 class AuthCubit extends HydratedBloc<AuthCubit, AuthState> {
   final UtilsCubit utilsCubit;
-  final BaseRespository baseRespository;
   AuthCubit({
     required this.utilsCubit,
-    required this.baseRespository,
   }) : super(AuthInitial());
 
   Future<void> login(String email, String password) async {
-    // var baseRepository = BaseRespository();
+    var baseRepository = BaseRespository();
     LoginRequest loginRequest =
         LoginRequest(emailDoUsuario: email, senhaDoUsuario: password);
-    var response = await baseRespository.postRequest(
+    var response = await baseRepository.postRequest(
         "autenticacao/autenticar", loginRequest);
     if (response["sucesso"] == true) {
       emit(
@@ -29,6 +28,9 @@ class AuthCubit extends HydratedBloc<AuthCubit, AuthState> {
         ),
       );
       utilsCubit.showSnackBar("Logado com sucesso!");
+    } else {
+      utilsCubit.showAlertPopUp(email_or_password_wrong, response["mensagem"]);
+      print(response);
     }
   }
 

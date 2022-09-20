@@ -11,4 +11,13 @@ class UtilsCubit extends Cubit<UtilsState> {
       ShowSnackBar(message: message),
     );
   }
+
+  void showAlertPopUp(String title, String message) {
+    emit(
+      ShowAlertPopUp(
+        title: title,
+        message: message,
+      ),
+    );
+  }
 }
