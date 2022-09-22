@@ -13,14 +13,25 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(actions: [
+        TextButton(
+          onPressed: () {
+            context.read<LoginCubit>().logout();
+          },
+          child: const Icon(
+            Icons.logout,
+            color: Colors.red,
+          ),
+        ),
+      ]),
       body: const Text("Home page"),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           final loginCubit = BlocProvider.of<LoginCubit>(context);
           var currentState = loginCubit.state;
           if (currentState is LoggedUserState) {
-            print(currentState.password);
-            print(currentState.userName);
+            print(currentState.loggedUser.senha);
+            print(currentState.loggedUser.usuario);
           }
         },
         child: const Icon(Icons.add),

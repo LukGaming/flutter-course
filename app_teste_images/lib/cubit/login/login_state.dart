@@ -8,11 +8,6 @@ class LoginInitial extends LoginState {}
 class RegistrandoUsuario extends LoginState {}
 
 class LoggedUserState extends LoginState {
-  final String userName;
-  final String password;
-
-  LoggedUserState({
-    required this.userName,
-    required this.password,
-  });
+  final LoggedUser loggedUser;
+  LoggedUserState({required this.loggedUser});
 }

@@ -2,10 +2,23 @@ import 'package:app_teste_images/cubit/login/login_cubit.dart';
 import 'package:app_teste_images/cubit/utils/utils_cubit.dart';
 import 'package:app_teste_images/presentation/screens/home_page.dart';
 import 'package:app_teste_images/presentation/screens/login_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/src/hydrated_bloc.dart';
+import 'package:hydrated_bloc/src/hydrated_storage.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() {
+// void main() {
+//   runApp(const MyApp());
+// }
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+        ? HydratedStorage.webStorageDirectory
+        : await getTemporaryDirectory(),
+  );
   runApp(const MyApp());
 }
 
@@ -24,8 +37,7 @@ class MyApp extends StatelessWidget {
             create: (context) => UtilsCubit(),
           ),
           BlocProvider(
-            create: (context) =>
-                LoginCubit(utilsCubit: context.read<UtilsCubit>()),
+            create: (context) => LoginCubit(utilsCubit: context.read()),
           ),
         ],
         child: const HandleInitialView(),
@@ -42,8 +54,11 @@ class HandleInitialView extends StatelessWidget {
     return BlocConsumer<UtilsCubit, UtilsState>(
       listener: (context, state) {
         if (state is ShowSnackBarMessage) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.message)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+            ),
+          );
         }
       },
       builder: (context, state) {
